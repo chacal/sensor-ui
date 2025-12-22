@@ -12,17 +12,19 @@
 
   let socket;
   let messageCount = 0;
-  let reconnectTimeout;
 
   function connect() {
-    clearTimeout(reconnectTimeout);
     const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
     const url = `${protocol}://${window.location.host}/ws`;
     serverUrl.textContent = url;
 
     setStatus('Connecting…', 'pending');
 
-    socket = new WebSocket(url);
+    socket = new ReconnectingWebSocket(url);
+
+    socket.addEventListener('connecting', () => {
+      setStatus('Connecting…', 'pending');
+    });
 
     socket.addEventListener('open', () => {
       setStatus('Connected', 'connected');
@@ -46,12 +48,10 @@
 
     socket.addEventListener('close', () => {
       setStatus('Disconnected (retrying…)');
-      reconnectTimeout = setTimeout(connect, 1500);
     });
 
     socket.addEventListener('error', () => {
       setStatus('Connection error (retrying…)');
-      socket.close();
     });
   }
 
