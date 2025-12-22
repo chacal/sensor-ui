@@ -30,17 +30,14 @@
     socket.addEventListener('message', (event) => {
       try {
         const payload = JSON.parse(event.data);
-        if (payload.type !== 'sensor') {
-          return;
-        }
 
         messageCount += 1;
         messageCountEl.textContent = String(messageCount);
 
-        const time = new Date(payload.timestamp || Date.now()).toLocaleTimeString();
-        const details = `MQTT ${payload.topic || ''} · ${time}`;
-        const text = payload.message || event.data;
-        addMessage(text, false, details);
+        const time = new Date(payload.ts || Date.now()).toLocaleTimeString();
+        const details = `RSSI ${payload.rssi || ''} · ${time}`;
+        const text = payload.instance || event.data;
+        addMessage(text, details);
       } catch (err) {
         // Ignore non-JSON payloads.
       }
@@ -55,9 +52,9 @@
     });
   }
 
-  function addMessage(text, isSystem = false, details = '') {
+  function addMessage(text, details = '') {
     const el = document.createElement('div');
-    el.className = `msg${isSystem ? ' system' : ''}`;
+    el.className = `msg`;
     el.textContent = text;
 
     if (details) {

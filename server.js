@@ -55,13 +55,6 @@ wss.on('connection', (socket, request) => {
   const clientAddress = request.socket.remoteAddress;
   console.log(`Client connected: ${clientAddress}`);
 
-  socket.send(
-    JSON.stringify({
-      type: 'system',
-      message: 'Connected to websocket server'
-    })
-  );
-
   socket.on('close', () => {
     console.log(`Client disconnected: ${clientAddress}`);
   });
@@ -91,12 +84,7 @@ mqttClient.on('error', (err) => {
 mqttClient.on('message', (topic, message) => {
   const text = message.toString();
 
-  wss.broadcast({
-    type: 'sensor',
-    topic,
-    message: text,
-    timestamp: Date.now()
-  });
+  wss.broadcast(JSON.parse(text));
 });
 
 server.listen(PORT, () => {
