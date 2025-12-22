@@ -1,0 +1,14 @@
+{
+  "name": "sensor-ui",
+  "version": "1.0.0",
+  "description": "NodeJS backend with websocket endpoint and simple frontend",
+  "main": "server.js",
+  "private": true,
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}
