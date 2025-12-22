@@ -84,7 +84,13 @@ mqttClient.on('error', (err) => {
 mqttClient.on('message', (topic, message) => {
   const text = message.toString();
 
-  wss.broadcast(JSON.parse(text));
+  try {
+    const parsed = JSON.parse(text);
+    wss.broadcast(parsed);
+  } catch (err) {
+    console.error('MQTT payload is not valid JSON, skipping');
+    return;
+  }
 });
 
 server.listen(PORT, () => {
