@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sensor UI Websocket Demo</title>
   <link rel="stylesheet" href="./style.css">
-
 </head>
 <body>
   <div class="card">
@@ -16,32 +15,30 @@
         <span class="status-text">Connecting…</span>
       </div>
     </header>
-    <div class="content">
-      <section class="left">
-        <p class="section-title">Live Feed</p>
-        <div class="log" id="log"></div>
-      </section>
-      <section class="right">
-        <p class="section-title">Connection details</p>
-        <div class="metrics">
-          <div class="metric">
-            <span>Server</span>
-            <strong id="server-url">ws://localhost:3000/ws</strong>
-          </div>
-          <div class="metric">
-            <span>Status</span>
-            <strong id="status-label">Connecting…</strong>
-          </div>
-          <div class="metric">
-            <span>Messages received</span>
-            <strong id="message-count">0</strong>
-          </div>
+    <main class="table-wrapper">
+      <div class="table-header">
+        <div>
+          <p class="section-title">Live Sensors</p>
+          <p class="muted">Showing latest payload per sensor instance from MQTT</p>
         </div>
-        <div class="panel" style="margin-top: 16px;">
-          Incoming MQTT messages on <code>/sensor/#</code> appear in the feed. Keep this page open to monitor live sensor updates.
+        <div class="meta">
+          <span id="server-url">ws://localhost:3000/ws</span>
+          <span id="status-label">Connecting…</span>
+          <span id="message-count">0 msgs</span>
         </div>
-      </section>
-    </div>
+      </div>
+      <div class="table-container">
+        <table id="sensor-table">
+          <thead>
+            <tr>
+              <th>Sensor ID</th>
+              <th>Payload (JSON)</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </main>
   </div>
 
   <script src="https://unpkg.com/reconnecting-websocket/dist/reconnecting-websocket-iife.js"></script>

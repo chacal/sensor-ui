@@ -2,13 +2,14 @@
   const statusEl = document.getElementById('status');
   const statusText = statusEl.querySelector('.status-text');
   const statusDot = statusEl.querySelector('.status-dot');
-  const log = document.getElementById('log');
   const serverUrl = document.getElementById('server-url');
   const statusLabel = document.getElementById('status-label');
   const messageCountEl = document.getElementById('message-count');
+  const tableBody = document.querySelector('#sensor-table tbody');
 
   let socket;
   let messageCount = 0;
+  const rowsById = new Map();
 
   function connect() {
     const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
@@ -30,14 +31,14 @@
     socket.addEventListener('message', (event) => {
       try {
         const payload = JSON.parse(event.data);
+        if (!payload || !payload.instance) {
+          return;
+        }
 
         messageCount += 1;
-        messageCountEl.textContent = String(messageCount);
+        messageCountEl.textContent = `${messageCount} msgs`;
 
-        const time = new Date(payload.ts || Date.now()).toLocaleTimeString();
-        const details = `RSSI ${payload.rssi || ''} · ${time}`;
-        const text = payload.instance || event.data;
-        addMessage(text, details);
+        upsertRow(payload);
       } catch (err) {
         // Ignore non-JSON payloads.
       }
@@ -52,26 +53,36 @@
     });
   }
 
-  function addMessage(text, details = '') {
-    const el = document.createElement('div');
-    el.className = `msg`;
-    el.textContent = text;
+  function upsertRow(payload) {
+    const id = payload.instance;
+    const jsonText = JSON.stringify(payload);
 
-    if (details) {
-      const small = document.createElement('small');
-      small.textContent = details;
-      el.appendChild(small);
+    let row = rowsById.get(id);
+    if (!row) {
+      row = document.createElement('tr');
+      const idCell = document.createElement('td');
+      const payloadCell = document.createElement('td');
+
+      idCell.textContent = id;
+      payloadCell.className = 'payload-cell';
+      payloadCell.textContent = jsonText;
+
+      row.appendChild(idCell);
+      row.appendChild(payloadCell);
+      tableBody.appendChild(row);
+
+      rowsById.set(id, row);
+    } else {
+      row.children[0].textContent = id;
+      row.children[1].textContent = jsonText;
     }
-
-    log.appendChild(el);
-    log.scrollTop = log.scrollHeight;
   }
 
   function setStatus(label, state = 'disconnected') {
     statusText.textContent = label;
     statusLabel.textContent = label;
 
-    statusEl.classList.remove('connected');
+    statusEl.classList.toggle('connected', state === 'connected');
     statusDot.style.background = state === 'connected' ? '#34d399' : '#ef4444';
   }
 
