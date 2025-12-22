@@ -36,11 +36,26 @@
 
       try {
         const payload = JSON.parse(event.data);
-        const details =
-          payload.type === 'system'
-            ? 'System'
-            : `${payload.from || 'Server'} · ${new Date(payload.timestamp || Date.now()).toLocaleTimeString()}`;
-        addMessage(payload.message, payload.type === 'system', details);
+        const time = new Date(payload.timestamp || Date.now()).toLocaleTimeString();
+        let details = '';
+        let isSystem = false;
+
+        switch (payload.type) {
+          case 'system':
+            details = 'System';
+            isSystem = true;
+            break;
+          case 'sensor':
+            details = `MQTT ${payload.topic || ''} · ${time}`;
+            break;
+          case 'chat':
+          default:
+            details = `${payload.from || 'Server'} · ${time}`;
+            break;
+        }
+
+        const text = payload.message || event.data;
+        addMessage(text, isSystem, details);
       } catch (err) {
         addMessage(event.data);
       }
