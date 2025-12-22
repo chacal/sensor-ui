@@ -20,10 +20,6 @@
       <section class="left">
         <p class="section-title">Live Feed</p>
         <div class="log" id="log"></div>
-        <form id="message-form">
-          <input type="text" id="message-input" name="message" placeholder="Type a message to broadcast" autocomplete="off" />
-          <button type="submit" id="send-btn">Send</button>
-        </form>
       </section>
       <section class="right">
         <p class="section-title">Connection details</p>
@@ -42,7 +38,7 @@
           </div>
         </div>
         <div class="panel" style="margin-top: 16px;">
-          This page connects to the Node backend via WebSocket. Open multiple tabs to see broadcast messages. When the server echoes what you send, you will see it in the live feed.
+          Incoming MQTT messages on <code>/sensor/#</code> appear in the feed. Keep this page open to monitor live sensor updates.
         </div>
       </section>
     </div>

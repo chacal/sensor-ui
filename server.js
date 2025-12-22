@@ -62,18 +62,6 @@ wss.on('connection', (socket, request) => {
     })
   );
 
-  socket.on('message', (data) => {
-    const messageText = data.toString();
-    console.log(`Received: ${messageText}`);
-
-    wss.broadcast({
-      type: 'chat',
-      from: clientAddress,
-      message: messageText,
-      timestamp: Date.now()
-    });
-  });
-
   socket.on('close', () => {
     console.log(`Client disconnected: ${clientAddress}`);
   });

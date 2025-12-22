@@ -3,9 +3,6 @@
   const statusText = statusEl.querySelector('.status-text');
   const statusDot = statusEl.querySelector('.status-dot');
   const log = document.getElementById('log');
-  const messageForm = document.getElementById('message-form');
-  const messageInput = document.getElementById('message-input');
-  const sendBtn = document.getElementById('send-btn');
   const serverUrl = document.getElementById('server-url');
   const statusLabel = document.getElementById('status-label');
   const messageCountEl = document.getElementById('message-count');
@@ -31,33 +28,21 @@
     });
 
     socket.addEventListener('message', (event) => {
-      messageCount += 1;
-      messageCountEl.textContent = String(messageCount);
-
       try {
         const payload = JSON.parse(event.data);
-        const time = new Date(payload.timestamp || Date.now()).toLocaleTimeString();
-        let details = '';
-        let isSystem = false;
-
-        switch (payload.type) {
-          case 'system':
-            details = 'System';
-            isSystem = true;
-            break;
-          case 'sensor':
-            details = `MQTT ${payload.topic || ''} · ${time}`;
-            break;
-          case 'chat':
-          default:
-            details = `${payload.from || 'Server'} · ${time}`;
-            break;
+        if (payload.type !== 'sensor') {
+          return;
         }
 
+        messageCount += 1;
+        messageCountEl.textContent = String(messageCount);
+
+        const time = new Date(payload.timestamp || Date.now()).toLocaleTimeString();
+        const details = `MQTT ${payload.topic || ''} · ${time}`;
         const text = payload.message || event.data;
-        addMessage(text, isSystem, details);
+        addMessage(text, false, details);
       } catch (err) {
-        addMessage(event.data);
+        // Ignore non-JSON payloads.
       }
     });
 
@@ -91,23 +76,7 @@
 
     statusEl.classList.remove('connected');
     statusDot.style.background = state === 'connected' ? '#34d399' : '#ef4444';
-
-    const disabled = state !== 'connected';
-    messageInput.disabled = disabled;
-    sendBtn.disabled = disabled;
   }
-
-  messageForm.addEventListener('submit', (event) => {
-    event.preventDefault();
-    const text = messageInput.value.trim();
-    if (!text || !socket || socket.readyState !== WebSocket.OPEN) {
-      return;
-    }
-
-    socket.send(text);
-    messageInput.value = '';
-    messageInput.focus();
-  });
 
   connect();
 })();
