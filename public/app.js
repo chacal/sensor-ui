@@ -55,27 +55,35 @@
 
   function upsertRow(payload) {
     const id = payload.instance;
-    const jsonText = JSON.stringify(payload);
+    const temp = safeNumber(payload.temperature);
+    const humidity = safeNumber(payload.humidity);
+    const pressure = safeNumber(payload.pressure);
+    const vccMv = safeNumber(payload.vcc);
+    const ts = payload.ts || payload.timestamp || Date.now();
 
     let row = rowsById.get(id);
     if (!row) {
       row = document.createElement('tr');
-      const idCell = document.createElement('td');
-      const payloadCell = document.createElement('td');
-
-      idCell.textContent = id;
-      payloadCell.className = 'payload-cell';
-      payloadCell.textContent = jsonText;
-
-      row.appendChild(idCell);
-      row.appendChild(payloadCell);
+      row.appendChild(document.createElement('td')); // id
+      row.appendChild(document.createElement('td')); // temp
+      row.appendChild(document.createElement('td')); // humidity
+      row.appendChild(document.createElement('td')); // pressure
+      row.appendChild(document.createElement('td')); // vcc
+      row.appendChild(document.createElement('td')); // time
       tableBody.appendChild(row);
 
       rowsById.set(id, row);
-    } else {
-      row.children[0].textContent = id;
-      row.children[1].textContent = jsonText;
     }
+
+    const cells = row.children;
+    cells[0].textContent = id;
+    cells[1].textContent = formatValue(temp, '°C');
+    cells[2].textContent = formatValue(humidity, '%');
+    cells[3].textContent = formatValue(pressure, 'hPa');
+    cells[4].textContent = formatVoltage(vccMv);
+    cells[5].textContent = formatTime(ts);
+
+    sortRows();
   }
 
   function setStatus(label, state = 'disconnected') {
@@ -84,6 +92,33 @@
 
     statusEl.classList.toggle('connected', state === 'connected');
     statusDot.style.background = state === 'connected' ? '#34d399' : '#ef4444';
+  }
+
+  function sortRows() {
+    const rows = Array.from(tableBody.children);
+    rows.sort((a, b) => a.children[0].textContent.localeCompare(b.children[0].textContent));
+    rows.forEach((row) => tableBody.appendChild(row));
+  }
+
+  function safeNumber(value) {
+    const num = Number(value);
+    return Number.isFinite(num) ? num : null;
+  }
+
+  function formatValue(value, suffix) {
+    if (value === null || value === undefined) return '—';
+    return suffix ? `${value} ${suffix}` : String(value);
+  }
+
+  function formatVoltage(millivolts) {
+    if (millivolts === null || millivolts === undefined) return '—';
+    return `${(millivolts / 1000).toFixed(2)} V`;
+  }
+
+  function formatTime(ts) {
+    const date = new Date(ts);
+    if (Number.isNaN(date.getTime())) return '—';
+    return date.toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
   }
 
   connect();

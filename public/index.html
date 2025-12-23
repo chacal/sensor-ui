@@ -19,7 +19,7 @@
       <div class="table-header">
         <div>
           <p class="section-title">Live Sensors</p>
-          <p class="muted">Showing latest payload per sensor instance from MQTT</p>
+          <p class="muted">Latest reading per sensor (sorted by sensor ID)</p>
         </div>
         <div class="meta">
           <span id="server-url">ws://localhost:3000/ws</span>
@@ -32,7 +32,11 @@
           <thead>
             <tr>
               <th>Sensor ID</th>
-              <th>Payload (JSON)</th>
+              <th>Temperature</th>
+              <th>Humidity</th>
+              <th>Pressure</th>
+              <th>VCC</th>
+              <th>Last update</th>
             </tr>
           </thead>
           <tbody></tbody>
