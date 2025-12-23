@@ -1,7 +1,4 @@
 (() => {
-  const statusEl = document.getElementById('status');
-  const statusText = statusEl.querySelector('.status-text');
-  const statusDot = statusEl.querySelector('.status-dot');
   const serverUrl = document.getElementById('server-url');
   const statusLabel = document.getElementById('status-label');
   const messageCountEl = document.getElementById('message-count');
@@ -87,11 +84,8 @@
   }
 
   function setStatus(label, state = 'disconnected') {
-    statusText.textContent = label;
     statusLabel.textContent = label;
-
-    statusEl.classList.toggle('connected', state === 'connected');
-    statusDot.style.background = state === 'connected' ? '#34d399' : '#ef4444';
+    statusLabel.classList.toggle('ok', state === 'connected');
   }
 
   function sortRows() {
