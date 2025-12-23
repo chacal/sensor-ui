@@ -126,6 +126,7 @@ h1 {
 
 .table-container {
   flex: 1;
+  align-items: flex-start;
   min-height: 0;
   display: flex;
   overflow-y: auto;
