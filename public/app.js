@@ -78,6 +78,8 @@
 
     const isLowVcc = voltage !== null && voltage < 2.6;
     row.classList.toggle('low-vcc', isLowVcc);
+    const isStale = Date.now() - new Date(ts).getTime() > 10 * 60 * 1000;
+    row.classList.toggle('stale', isStale);
 
     sortRows();
   }
