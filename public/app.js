@@ -56,6 +56,7 @@
     const humidity = safeNumber(payload.humidity);
     const pressure = safeNumber(payload.pressure);
     const vccMv = safeNumber(payload.vcc);
+    const voltage = vccMv === null ? null : vccMv / 1000;
     const ts = payload.ts || payload.timestamp || Date.now();
 
     let row = rowsById.get(id);
@@ -79,6 +80,9 @@
     cells[3].textContent = formatValue(pressure, 'hPa');
     cells[4].textContent = formatVoltage(vccMv);
     cells[5].textContent = formatTime(ts);
+
+    const isLowVcc = voltage !== null && voltage < 2.6;
+    row.classList.toggle('low-vcc', isLowVcc);
 
     sortRows();
   }

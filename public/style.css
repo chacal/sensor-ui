@@ -166,6 +166,11 @@ table tbody tr:hover td {
   background: rgba(56, 189, 248, 0.06);
 }
 
+.low-vcc td {
+  background: rgba(248, 113, 113, 0.1);
+  color: #fecdd3;
+}
+
 .payload-cell {
   font-family: "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
   white-space: normal;
