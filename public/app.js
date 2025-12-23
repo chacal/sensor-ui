@@ -1,11 +1,9 @@
 (() => {
   const serverUrl = document.getElementById('server-url');
   const statusLabel = document.getElementById('status-label');
-  const messageCountEl = document.getElementById('message-count');
   const tableBody = document.querySelector('#sensor-table tbody');
 
   let socket;
-  let messageCount = 0;
   const rowsById = new Map();
 
   function connect() {
@@ -31,9 +29,6 @@
         if (!payload || !payload.instance) {
           return;
         }
-
-        messageCount += 1;
-        messageCountEl.textContent = `${messageCount} msgs`;
 
         upsertRow(payload);
       } catch (err) {
