@@ -16,6 +16,8 @@ const MQTT_URL = `mqtts://${MQTT_HOST}:${MQTT_PORT}`;
 const app = express();
 app.use(express.static(PUBLIC_DIR));
 
+const latestReadings = new Map();
+
 function requireEnv(key) {
   const value = process.env[key];
   if (!value) {
@@ -55,6 +57,11 @@ wss.on('connection', (socket, request) => {
   const clientAddress = request.socket.remoteAddress;
   console.log(`Client connected: ${clientAddress}`);
 
+  // Send cached latest values to new client.
+  for (const reading of latestReadings.values()) {
+    socket.send(JSON.stringify(reading));
+  }
+
   socket.on('close', () => {
     console.log(`Client disconnected: ${clientAddress}`);
   });
@@ -86,6 +93,13 @@ mqttClient.on('message', (topic, message) => {
 
   try {
     const parsed = JSON.parse(text);
+
+    if (!parsed.instance) {
+      console.warn('MQTT payload missing instance, skipping');
+      return;
+    }
+
+    latestReadings.set(parsed.instance, parsed);
     wss.broadcast(parsed);
   } catch (err) {
     console.error('MQTT payload is not valid JSON, skipping');
