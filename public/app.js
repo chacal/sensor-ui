@@ -50,6 +50,7 @@
     const temp = safeNumber(payload.temperature);
     const humidity = safeNumber(payload.humidity);
     const pressure = safeNumber(payload.pressure);
+    const motion = payload.motionDetected;
     const vccMv = safeNumber(payload.vcc);
     const voltage = vccMv === null ? null : vccMv / 1000;
     const ts = payload.ts || payload.timestamp || Date.now();
@@ -61,6 +62,7 @@
       row.appendChild(document.createElement('td')); // temp
       row.appendChild(document.createElement('td')); // humidity
       row.appendChild(document.createElement('td')); // pressure
+      row.appendChild(document.createElement('td')); // motion
       row.appendChild(document.createElement('td')); // vcc
       row.appendChild(document.createElement('td')); // time
       tableBody.appendChild(row);
@@ -73,8 +75,9 @@
     cells[1].textContent = formatValue(temp, '°C');
     cells[2].textContent = formatValue(humidity, '%');
     cells[3].textContent = formatValue(pressure, 'hPa');
-    cells[4].textContent = formatVoltage(vccMv);
-    cells[5].textContent = formatTime(ts);
+    cells[4].textContent = formatBoolean(motion);
+    cells[5].textContent = formatVoltage(vccMv);
+    cells[6].textContent = formatTime(ts);
 
     const isLowVcc = voltage !== null && voltage < 2.6;
     row.classList.toggle('low-vcc', isLowVcc);
@@ -93,6 +96,11 @@
     const rows = Array.from(tableBody.children);
     rows.sort((a, b) => a.children[0].textContent.localeCompare(b.children[0].textContent));
     rows.forEach((row) => tableBody.appendChild(row));
+  }
+
+  function formatBoolean(value) {
+    if (value === undefined || value === null) return '—';
+    return value ? 'Yes' : 'No';
   }
 
   function safeNumber(value) {
